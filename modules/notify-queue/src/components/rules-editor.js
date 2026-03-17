@@ -19,7 +19,7 @@ const RulesEditor = (function () {
     }
 
     function actionBadge(action) {
-        return `<span class="badge badge-${action}">${action}</span>`;
+        return `<span class="badge badge-${esc(action)}">${esc(action)}</span>`;
     }
 
     function render() {
@@ -52,7 +52,7 @@ const RulesEditor = (function () {
                 <td style="font-weight:500">${esc(r.source)}</td>
                 <td>${actionBadge(r.action)}</td>
                 <td>${r.duration_seconds}s</td>
-                <td>${r.priority ? `<span class="badge badge-${r.priority}">${r.priority}</span>` : 'default'}</td>
+                <td>${r.priority ? `<span class="badge badge-${esc(r.priority)}">${esc(r.priority)}</span>` : 'default'}</td>
                 <td>
                     <div style="display:flex;gap:4px">
                         <button class="btn btn-sm" data-edit="${esc(r.source)}">Edit</button>

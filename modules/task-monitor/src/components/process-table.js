@@ -14,7 +14,7 @@ const ProcessTable = (() => {
         const toolbar = document.createElement('div');
         toolbar.className = 'process-toolbar';
         toolbar.innerHTML = `
-            <input type="text" placeholder="Filter processes..." id="proc-filter" value="${filter}" />
+            <input type="text" placeholder="Filter processes..." id="proc-filter" value="${escapeHtml(filter)}" />
             <button class="toolbar-btn ${treeMode ? '' : 'active'}" id="btn-flat">List</button>
             <button class="toolbar-btn ${treeMode ? 'active' : ''}" id="btn-tree">Tree</button>
             <button class="toolbar-btn danger" id="btn-kill" title="Kill selected process">Kill</button>
@@ -92,7 +92,7 @@ const ProcessTable = (() => {
                 <td class="col-cpu ${cpuClass}">${proc.cpu_percent.toFixed(1)}%</td>
                 <td class="col-mem">${formatBytes(proc.memory_bytes)}</td>
                 <td class="col-disk">${formatBytes(proc.disk_read_bytes)}</td>
-                <td class="col-status">${proc.status}</td>
+                <td class="col-status">${escapeHtml(proc.status)}</td>
             `;
 
             tr.addEventListener('click', () => {
