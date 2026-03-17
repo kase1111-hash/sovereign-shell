@@ -1,0 +1,36 @@
+[module]
+name = "task-monitor"
+version = "0.1.0"
+status = "alpha"
+description = "Task monitor replacing Windows Task Manager with Process Explorer-level depth."
+
+[purpose]
+narrative = """
+Windows Task Manager is a toy. It hides critical information, makes killing
+processes unnecessarily hard, and never answers the question "why can't I
+delete this file?" This module provides a proper process monitor with tree
+view, file lock finder (via Restart Manager API), service management, and
+real-time performance graphs. No elevation dialogs just to see what's running.
+"""
+
+[architecture]
+language = "rust + vanilla js"
+framework = "tauri v2"
+entry_point = "src-tauri/src/main.rs"
+frontend = "src/index.html"
+
+[boundaries]
+depends_on = ["sovereign_config"]
+system_apis = ["sysinfo crate", "Restart Manager API", "sc.exe", "systemctl"]
+external_deps = ["tauri", "sysinfo"]
+
+[maintenance]
+last_updated = "2026-03-17"
+last_updated_by = "claude-code"
+context_budget = "medium"
+known_limitations = [
+    "Suspend/resume requires platform-specific implementation on Windows",
+    "GPU stats not yet implemented",
+    "System tray integration not yet implemented",
+    "Service dependency tree not yet implemented",
+]

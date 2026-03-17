@@ -1,0 +1,11 @@
+# Sovereign Task Monitor — Default Configuration
+
+[general]
+update_interval_ms = 1000
+default_view = "processes"       # processes | performance | services | file-locks
+show_system_processes = false
+confirm_kill = true
+
+[tray]
+minimize_to_tray = true
+show_cpu_indicator = true
