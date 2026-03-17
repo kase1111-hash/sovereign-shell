@@ -1,0 +1,7 @@
+[workspace]
+resolver = "2"
+members = [
+    "shared/config",
+    "shared/ipc",
+    "modules/launcher/src-tauri",
+]

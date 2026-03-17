@@ -1,0 +1,31 @@
+[module]
+name = "launcher"
+version = "0.1.0"
+status = "scaffold"
+description = "Keyboard-driven app and file launcher replacing the Start Menu."
+
+[purpose]
+narrative = """
+The Windows Start Menu has become an advertising surface. Tiles, suggested apps,
+and Bing-integrated search serve Microsoft's engagement metrics, not the user's
+workflow. This module replaces it with a fast, keyboard-driven launcher that
+indexes local applications and files via SQLite FTS5. No tiles. No ads. No web
+results. Press a hotkey, type what you want, hit enter. That's it.
+"""
+
+[architecture]
+language = "rust"
+framework = "tauri"
+entry_point = "src-tauri/src/main.rs"
+ipc_protocol = "none"
+
+[boundaries]
+depends_on = []
+system_apis = ["Win32 Shell", "RegisterHotKey"]
+external_deps = ["sqlite", "fuzzy-matcher"]
+
+[maintenance]
+last_updated = "2026-03-12"
+last_updated_by = "claude-code"
+context_budget = "small"
+known_limitations = ["Scaffold only — no functional code yet"]

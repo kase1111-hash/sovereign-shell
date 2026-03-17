@@ -1,0 +1,237 @@
+/*
+ * Sovereign Launcher — Styles
+ *
+ * Inherits from the shared theme variables.
+ * The launcher is a floating, borderless, transparent window.
+ */
+
+/* ── Theme Variables (inline for standalone operation) ──────────────────── */
+
+:root {
+    --bg-primary: #12121a;
+    --bg-secondary: #1a1a2e;
+    --bg-tertiary: #222240;
+    --bg-input: #0e0e16;
+    --bg-hover: #2a2a4a;
+    --bg-selected: #1e3a5f;
+
+    --text-primary: #e8e8ee;
+    --text-secondary: #8888a0;
+    --text-muted: #555570;
+    --text-accent: #00d4ff;
+
+    --accent: #00d4ff;
+    --accent-hover: #00b8d9;
+    --accent-dim: #006680;
+    --accent-glow: rgba(0, 212, 255, 0.15);
+
+    --border: #2a2a3e;
+    --border-focus: #00d4ff;
+
+    --radius: 10px;
+    --radius-sm: 6px;
+
+    --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Cascadia Code', 'Consolas', monospace;
+
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 30px rgba(0, 212, 255, 0.08);
+    --transition: 150ms ease;
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    font-family: var(--font-sans);
+    background: transparent;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ── Launcher Container ────────────────────────────────────────────────── */
+
+#launcher {
+    width: 600px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    overflow: hidden;
+}
+
+/* ── Search Bar ────────────────────────────────────────────────────────── */
+
+#search-container {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 10px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+#search-icon {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+#search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    caret-color: var(--accent);
+}
+
+#search-input::placeholder {
+    color: var(--text-muted);
+}
+
+#index-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ── Results List ──────────────────────────────────────────────────────── */
+
+#results {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#results.hidden {
+    display: none;
+}
+
+/* Scrollbar */
+#results::-webkit-scrollbar {
+    width: 4px;
+}
+#results::-webkit-scrollbar-track {
+    background: transparent;
+}
+#results::-webkit-scrollbar-thumb {
+    background: #3a3a5a;
+    border-radius: 4px;
+}
+
+/* ── Result Item ───────────────────────────────────────────────────────── */
+
+.result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 12px;
+    cursor: pointer;
+    transition: background var(--transition);
+    border-bottom: 1px solid rgba(42, 42, 62, 0.4);
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-item:hover,
+.result-item.selected {
+    background: var(--bg-hover);
+}
+
+.result-item.selected {
+    background: var(--bg-selected);
+    border-left: 2px solid var(--accent);
+    padding-left: 14px;
+}
+
+.result-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.result-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.result-name {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-path {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-badge {
+    font-size: 10px;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+}
+
+/* ── Keyboard Hint Footer ──────────────────────────────────────────────── */
+
+#results-footer {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 6px 16px;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.hint kbd {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0 4px;
+    margin-right: 3px;
+}
+
+/* ── No Results ────────────────────────────────────────────────────────── */
+
+.no-results {
+    padding: 20px 16px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+}
