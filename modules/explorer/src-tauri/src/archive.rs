@@ -1,5 +1,6 @@
 //! Archive handling: zip read, extract, and create.
 
+use log::warn;
 use serde::Serialize;
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -54,10 +55,24 @@ pub fn extract_zip(archive_path: &str, dest_dir: &str) -> Result<usize, String> 
         let mut entry = archive.by_index(i)
             .map_err(|e| format!("Zip entry error: {e}"))?;
 
-        let out_path = dest.join(entry.name());
+        // Prevent zip-slip: reject entries with path traversal components
+        let entry_name = entry.name().to_string();
+        if entry_name.contains("..") || entry_name.starts_with('/') || entry_name.starts_with('\\') {
+            warn!("Skipping suspicious zip entry: {}", entry_name);
+            continue;
+        }
 
-        // Prevent zip-slip by ensuring path stays within dest
-        if !out_path.starts_with(&dest) {
+        let out_path = dest.join(&entry_name);
+
+        // Double-check: canonicalize and verify path stays within dest
+        // (create parent dirs first so canonicalize works for new paths)
+        if let Some(parent) = out_path.parent() {
+            let _ = std::fs::create_dir_all(parent);
+        }
+        let canonical_dest = dest.canonicalize().unwrap_or_else(|_| dest.clone());
+        let canonical_out = out_path.canonicalize().unwrap_or_else(|_| out_path.clone());
+        if !canonical_out.starts_with(&canonical_dest) {
+            warn!("Zip-slip attempt blocked: {}", entry_name);
             continue;
         }
 

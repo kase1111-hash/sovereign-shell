@@ -177,10 +177,14 @@ impl Database {
             return Ok(Vec::new());
         }
 
-        // Build FTS5 query with prefix matching
+        // Build FTS5 query with prefix matching.
+        // Sanitize: quote each term to prevent FTS5 operator injection.
         let fts_query: String = query
             .split_whitespace()
-            .map(|term| format!("{}*", term.replace('"', "")))
+            .map(|term| {
+                let sanitized = term.replace('"', "");
+                format!("\"{}\"*", sanitized)
+            })
             .collect::<Vec<_>>()
             .join(" ");
 

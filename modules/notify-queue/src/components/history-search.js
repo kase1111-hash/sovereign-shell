@@ -33,7 +33,7 @@ const HistorySearch = (function () {
     }
 
     function priorityBadge(p) {
-        return `<span class="badge badge-${p}">${p}</span>`;
+        return `<span class="badge badge-${esc(p)}">${esc(p)}</span>`;
     }
 
     function formatDate(ts) {

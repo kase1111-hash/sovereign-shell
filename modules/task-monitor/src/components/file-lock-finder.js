@@ -89,7 +89,7 @@ const FileLockFinder = (() => {
         } catch (e) {
             results.innerHTML = `
                 <div style="padding:12px;color:var(--danger);font-size:13px;">
-                    Error: ${e}
+                    Error: ${escapeHtml(String(e))}
                 </div>
             `;
         }

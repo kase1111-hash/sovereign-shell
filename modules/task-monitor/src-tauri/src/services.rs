@@ -5,6 +5,18 @@
 
 use serde::Serialize;
 
+/// Validate a service name: only alphanumeric, hyphens, underscores, dots.
+fn validate_service_name(name: &str) -> Result<(), String> {
+    if name.is_empty() || name.len() > 256 {
+        return Err("Invalid service name length".to_string());
+    }
+    if name.chars().all(|c| c.is_alphanumeric() || c == '-' || c == '_' || c == '.') {
+        Ok(())
+    } else {
+        Err(format!("Invalid characters in service name: {}", name))
+    }
+}
+
 /// A Windows service entry.
 #[derive(Debug, Clone, Serialize)]
 pub struct ServiceInfo {
@@ -130,6 +142,8 @@ fn enumerate_services_systemd() -> Result<Vec<ServiceInfo>, String> {
 
 /// Start a service (requires elevation on Windows).
 pub fn start_service(name: &str) -> Result<(), String> {
+    validate_service_name(name)?;
+
     #[cfg(windows)]
     let cmd = std::process::Command::new("sc")
         .args(["start", name])
@@ -153,6 +167,8 @@ pub fn start_service(name: &str) -> Result<(), String> {
 
 /// Stop a service.
 pub fn stop_service(name: &str) -> Result<(), String> {
+    validate_service_name(name)?;
+
     #[cfg(windows)]
     let cmd = std::process::Command::new("sc")
         .args(["stop", name])

@@ -103,14 +103,14 @@ const Diagnostics = (function () {
             let success = 0;
             results.forEach(r => {
                 if (r.success) {
-                    text += `Reply from ${r.host}: seq=${r.seq} time=${r.rtt_ms.toFixed(1)}ms ttl=${r.ttl}\n`;
+                    text += `Reply from ${esc(r.host)}: seq=${r.seq} time=${r.rtt_ms.toFixed(1)}ms ttl=${r.ttl}\n`;
                     success++;
                 } else {
                     text += `Request timed out (seq=${r.seq})\n`;
                 }
             });
             const loss = results.length > 0 ? ((results.length - success) / results.length * 100).toFixed(0) : 0;
-            text += `\n--- ${host} ping statistics ---\n`;
+            text += `\n--- ${esc(host)} ping statistics ---\n`;
             text += `${results.length} packets transmitted, ${success} received, ${loss}% loss\n`;
             if (success > 0) {
                 const rtts = results.filter(r => r.success).map(r => r.rtt_ms);
@@ -118,7 +118,7 @@ const Diagnostics = (function () {
             }
             output = text;
         } catch (e) {
-            output = `Error: ${e}\n`;
+            output = `Error: ${esc(String(e))}\n`;
         }
         running = false;
         render();
@@ -138,12 +138,12 @@ const Diagnostics = (function () {
                     text += `${String(h.hop).padStart(2)}  *  *  *\n`;
                 } else {
                     const rtts = h.rtt_ms.map(r => r.toFixed(1) + ' ms').join('  ');
-                    text += `${String(h.hop).padStart(2)}  ${h.address}  ${rtts}\n`;
+                    text += `${String(h.hop).padStart(2)}  ${esc(h.address)}  ${rtts}\n`;
                 }
             });
             output = text || 'No hops returned.\n';
         } catch (e) {
-            output = `Error: ${e}\n`;
+            output = `Error: ${esc(String(e))}\n`;
         }
         running = false;
         render();
@@ -160,17 +160,17 @@ const Diagnostics = (function () {
             const result = await window.__TAURI__.core.invoke('dns_lookup', {
                 host, recordType, server,
             });
-            let text = `; Server: ${result.server}\n; Query time: ${result.elapsed_ms}ms\n\n`;
+            let text = `; Server: ${esc(result.server)}\n; Query time: ${result.elapsed_ms}ms\n\n`;
             if (result.answers.length === 0) {
                 text += 'No records found.\n';
             } else {
                 result.answers.forEach(a => {
-                    text += `${a.name}\t${a.ttl}\t${a.record_type}\t${a.value}\n`;
+                    text += `${esc(a.name)}\t${a.ttl}\t${esc(a.record_type)}\t${esc(a.value)}\n`;
                 });
             }
             output = text;
         } catch (e) {
-            output = `Error: ${e}\n`;
+            output = `Error: ${esc(String(e))}\n`;
         }
         running = false;
         render();

@@ -2,6 +2,28 @@
 
 use serde::Serialize;
 
+/// Validate a hostname/IP: only safe characters.
+fn validate_host(host: &str) -> Result<(), String> {
+    if host.is_empty() || host.len() > 253 {
+        return Err("Invalid host length".to_string());
+    }
+    if host.chars().all(|c| c.is_alphanumeric() || c == '.' || c == ':' || c == '-') {
+        Ok(())
+    } else {
+        Err(format!("Invalid characters in host: {}", host))
+    }
+}
+
+/// Validate DNS record type.
+fn validate_record_type(rt: &str) -> Result<(), String> {
+    const ALLOWED: &[&str] = &["A", "AAAA", "MX", "NS", "TXT", "CNAME", "SOA", "PTR", "SRV", "CAA"];
+    if ALLOWED.contains(&rt.to_uppercase().as_str()) {
+        Ok(())
+    } else {
+        Err(format!("Invalid record type: {}", rt))
+    }
+}
+
 /// Result of a DNS lookup.
 #[derive(Debug, Clone, Serialize)]
 pub struct DnsResult {
@@ -22,6 +44,11 @@ pub struct DnsAnswer {
 
 /// Perform a DNS lookup using nslookup or dig.
 pub fn lookup(host: &str, record_type: &str, server: Option<&str>) -> Result<DnsResult, String> {
+    validate_host(host)?;
+    validate_record_type(record_type)?;
+    if let Some(s) = server {
+        validate_host(s)?;
+    }
     let start = std::time::Instant::now();
 
     #[cfg(windows)]

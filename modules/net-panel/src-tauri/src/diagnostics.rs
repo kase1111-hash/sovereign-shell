@@ -2,6 +2,18 @@
 
 use serde::Serialize;
 
+/// Validate a hostname or IP address: only safe characters allowed.
+fn validate_host(host: &str) -> Result<(), String> {
+    if host.is_empty() || host.len() > 253 {
+        return Err("Invalid host length".to_string());
+    }
+    if host.chars().all(|c| c.is_alphanumeric() || c == '.' || c == ':' || c == '-') {
+        Ok(())
+    } else {
+        Err(format!("Invalid characters in host: {}", host))
+    }
+}
+
 /// A single ping result.
 #[derive(Debug, Clone, Serialize)]
 pub struct PingResult {
@@ -25,6 +37,9 @@ pub struct TracerouteHop {
 
 /// Run a ping and return all results.
 pub fn ping(host: &str, count: u32) -> Result<Vec<PingResult>, String> {
+    validate_host(host)?;
+    let count = count.min(100); // Cap to prevent abuse
+
     #[cfg(windows)]
     let output = std::process::Command::new("ping")
         .args(["-n", &count.to_string(), host])
@@ -80,6 +95,9 @@ pub fn ping(host: &str, count: u32) -> Result<Vec<PingResult>, String> {
 
 /// Run a traceroute.
 pub fn traceroute(host: &str, max_hops: u32) -> Result<Vec<TracerouteHop>, String> {
+    validate_host(host)?;
+    let max_hops = max_hops.min(64); // Cap to prevent abuse
+
     #[cfg(windows)]
     let output = std::process::Command::new("tracert")
         .args(["-h", &max_hops.to_string(), "-d", host])

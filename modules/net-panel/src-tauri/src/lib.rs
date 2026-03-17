@@ -22,7 +22,7 @@ struct AppState {
 
 #[tauri::command]
 fn get_adapters() -> Result<Vec<adapters::NetworkAdapter>, String> {
-    adapters::get_adapters()
+    adapters::enumerate_adapters()
 }
 
 #[tauri::command]

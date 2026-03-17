@@ -13,7 +13,7 @@ const ServiceList = (() => {
             const services = await invoke('get_services');
             renderTable(services, container);
         } catch (e) {
-            container.innerHTML = `<div style="padding:12px;color:var(--danger)">Error: ${e}</div>`;
+            container.innerHTML = `<div style="padding:12px;color:var(--danger)">Error: ${escapeHtml(String(e))}</div>`;
         }
     }
 
@@ -23,7 +23,7 @@ const ServiceList = (() => {
         // Filter bar
         const toolbar = document.createElement('div');
         toolbar.className = 'process-toolbar';
-        toolbar.innerHTML = `<input type="text" placeholder="Filter services..." value="${filter}" />`;
+        toolbar.innerHTML = `<input type="text" placeholder="Filter services..." value="${escapeHtml(filter)}" />`;
         toolbar.querySelector('input').addEventListener('input', (e) => {
             filter = e.target.value.toLowerCase();
             renderTable(services, container);
@@ -80,8 +80,8 @@ const ServiceList = (() => {
             tr.innerHTML = `
                 <td>${escapeHtml(svc.name)}</td>
                 <td>${escapeHtml(svc.display_name)}</td>
-                <td class="${statusClass}">${svc.status}</td>
-                <td>${svc.startup_type}</td>
+                <td class="${statusClass}">${escapeHtml(svc.status)}</td>
+                <td>${escapeHtml(svc.startup_type)}</td>
                 <td class="svc-actions">
                     <button class="svc-action-btn" data-action="start" data-name="${escapeAttr(svc.name)}">Start</button>
                     <button class="svc-action-btn" data-action="stop" data-name="${escapeAttr(svc.name)}">Stop</button>
@@ -117,7 +117,8 @@ const ServiceList = (() => {
     }
 
     function escapeAttr(text) {
-        return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+                   .replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     return { render };

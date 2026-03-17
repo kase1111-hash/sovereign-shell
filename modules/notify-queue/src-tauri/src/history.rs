@@ -92,9 +92,13 @@ impl HistoryDb {
 
     /// Search notification history using full-text search.
     pub fn search(&self, query: &str, limit: usize) -> Result<Vec<HistoryEntry>, String> {
+        // Sanitize: quote each term to prevent FTS5 operator injection.
         let fts_query = query
             .split_whitespace()
-            .map(|w| format!("{}*", w))
+            .map(|w| {
+                let sanitized = w.replace('"', "");
+                format!("\"{}\"*", sanitized)
+            })
             .collect::<Vec<_>>()
             .join(" ");
 

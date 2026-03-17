@@ -5,6 +5,30 @@
 
 use serde::Serialize;
 
+/// Sanitize a string for use in PowerShell single-quoted strings.
+/// Single quotes inside single-quoted strings are escaped by doubling them.
+/// Also reject characters that could break out of the command context.
+fn sanitize_ps_arg(s: &str) -> Result<String, String> {
+    // Reject null bytes and control characters
+    if s.bytes().any(|b| b == 0 || (b < 0x20 && b != b'\t')) {
+        return Err("Input contains invalid characters".to_string());
+    }
+    // Escape single quotes by doubling them (PowerShell escaping for single-quoted strings)
+    Ok(s.replace('\'', "''"))
+}
+
+/// Validate a hostname/IP: only alphanumeric, dots, colons, hyphens.
+fn validate_network_name(s: &str) -> Result<(), String> {
+    if s.is_empty() || s.len() > 253 {
+        return Err("Invalid network name length".to_string());
+    }
+    if s.chars().all(|c| c.is_alphanumeric() || c == '.' || c == ':' || c == '-' || c == '_') {
+        Ok(())
+    } else {
+        Err(format!("Invalid characters in network name: {}", s))
+    }
+}
+
 /// A network adapter/interface.
 #[derive(Debug, Clone, Serialize)]
 pub struct NetworkAdapter {
@@ -269,9 +293,10 @@ fn enumerate_adapters_ip() -> Result<Vec<NetworkAdapter>, String> {
 pub fn set_adapter_state(name: &str, enabled: bool) -> Result<(), String> {
     #[cfg(windows)]
     {
+        let safe_name = sanitize_ps_arg(name)?;
         let action = if enabled { "Enable-NetAdapter" } else { "Disable-NetAdapter" };
         let output = std::process::Command::new("powershell")
-            .args(["-NoProfile", "-Command", &format!("{} -Name '{}' -Confirm:$false", action, name)])
+            .args(["-NoProfile", "-Command", &format!("{} -Name '{}' -Confirm:$false", action, safe_name)])
             .output()
             .map_err(|e| format!("{e}"))?;
         if output.status.success() { Ok(()) }
@@ -279,6 +304,7 @@ pub fn set_adapter_state(name: &str, enabled: bool) -> Result<(), String> {
     }
     #[cfg(not(windows))]
     {
+        validate_network_name(name)?;
         let action = if enabled { "up" } else { "down" };
         let output = std::process::Command::new("ip")
             .args(["link", "set", name, action])
@@ -293,10 +319,18 @@ pub fn set_adapter_state(name: &str, enabled: bool) -> Result<(), String> {
 pub fn set_dns(adapter_name: &str, servers: &[String]) -> Result<(), String> {
     #[cfg(windows)]
     {
-        let servers_str = servers.join(",");
+        let safe_name = sanitize_ps_arg(adapter_name)?;
+        // Validate each server is a valid IP/hostname
+        for s in servers {
+            validate_network_name(s)?;
+        }
+        let servers_str = servers.iter()
+            .map(|s| format!("'{}'", sanitize_ps_arg(s).unwrap_or_default()))
+            .collect::<Vec<_>>()
+            .join(",");
         let output = std::process::Command::new("powershell")
             .args(["-NoProfile", "-Command",
-                &format!("Set-DnsClientServerAddress -InterfaceAlias '{}' -ServerAddresses @('{}')", adapter_name, servers_str)])
+                &format!("Set-DnsClientServerAddress -InterfaceAlias '{}' -ServerAddresses @({})", safe_name, servers_str)])
             .output()
             .map_err(|e| format!("{e}"))?;
         if output.status.success() { Ok(()) }
