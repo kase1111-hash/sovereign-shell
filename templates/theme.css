@@ -1,0 +1,24 @@
+/*
+ * Sovereign Shell — Shared Theme
+ *
+ * Dark theme CSS variables used by all module frontends.
+ * Each module imports or inlines these variables for visual consistency.
+ */
+
+:root {
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-tertiary: #0f3460;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --accent: #00d4ff;
+    --accent-hover: #00b8d9;
+    --danger: #ff4757;
+    --success: #2ed573;
+    --warning: #ffa502;
+    --border: #2a2a4a;
+    --radius: 6px;
+    --font-mono: 'Cascadia Code', 'Consolas', monospace;
+    --font-sans: 'Segoe UI', system-ui, sans-serif;
+    --transition: 150ms ease;
+}

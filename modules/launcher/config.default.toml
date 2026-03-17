@@ -1,0 +1,16 @@
+# Sovereign Launcher — Default Configuration
+# Copy to %APPDATA%\SovereignShell\launcher\config.toml to customize.
+
+[hotkey]
+modifier = "alt"
+key = "space"
+
+[indexing]
+refresh_interval_seconds = 300
+max_results = 8
+extra_dirs = []
+
+[appearance]
+window_width = 600
+max_visible_results = 8
+enable_vibrancy = true

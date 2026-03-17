@@ -13,8 +13,10 @@ const { getCurrentWindow } = window.__TAURI__.window;
 
 let selectedIndex = 0;
 let results = [];
+let calcResult = null; // { display, value } when in calculator mode
 let debounceTimer = null;
 const DEBOUNCE_MS = 80;
+const launcher = document.getElementById('launcher');
 
 // ── DOM Elements ────────────────────────────────────────────────────────
 
@@ -38,6 +40,10 @@ async function init() {
 
     // Listen for window-shown events (from hotkey toggle)
     await listen('window-shown', () => {
+        // Replay entrance animation
+        launcher.style.animation = 'none';
+        launcher.offsetHeight; // force reflow
+        launcher.style.animation = '';
         searchInput.focus();
         searchInput.select();
     });
@@ -56,6 +62,25 @@ searchInput.addEventListener('input', () => {
 });
 
 async function doSearch(query) {
+    // Calculator mode: input starts with '='
+    if (query.trimStart().startsWith('=')) {
+        const expr = query.trimStart().substring(1).trim();
+        results = [];
+        if (expr.length === 0) {
+            calcResult = null;
+        } else {
+            try {
+                calcResult = await invoke('evaluate_calc', { expr });
+            } catch (e) {
+                calcResult = { display: e, value: null, error: true };
+            }
+        }
+        renderResults();
+        resizeWindow();
+        return;
+    }
+
+    calcResult = null;
     try {
         results = await invoke('search', { query });
         selectedIndex = 0;
@@ -71,6 +96,28 @@ async function doSearch(query) {
 // ── Rendering ───────────────────────────────────────────────────────────
 
 function renderResults() {
+    // Calculator mode display
+    if (calcResult !== null) {
+        resultsContainer.classList.remove('hidden');
+        if (calcResult.error) {
+            resultsContainer.innerHTML = `<div class="no-results">${escapeHtml(calcResult.display)}</div>`;
+        } else {
+            resultsContainer.innerHTML = `
+                <div class="calc-result" id="calc-result-item">
+                    <div class="calc-icon">=</div>
+                    <div class="calc-value">${escapeHtml(calcResult.display)}</div>
+                    <span class="calc-hint">Enter to copy</span>
+                </div>
+                <div id="results-footer">
+                    <span class="hint"><kbd>Enter</kbd> copy to clipboard</span>
+                    <span class="hint"><kbd>Esc</kbd> close</span>
+                </div>
+            `;
+            document.getElementById('calc-result-item')?.addEventListener('click', copyCalcResult);
+        }
+        return;
+    }
+
     if (results.length === 0 && searchInput.value.trim() !== '') {
         resultsContainer.innerHTML = '<div class="no-results">No results found</div>';
         resultsContainer.classList.remove('hidden');
@@ -93,12 +140,17 @@ function renderResults() {
             ? `<span class="result-badge">${result.launch_count}×</span>`
             : '';
 
+        // Use icon_path for the icon element, fallback to initial letter
+        const iconId = `icon-${i}`;
+        const iconHtml = `<div class="result-icon" id="${iconId}">${initial}</div>`;
+
         html += `
             <div class="result-item${selected}"
                  data-index="${i}"
                  data-id="${result.id}"
-                 data-path="${escapeHtml(result.path)}">
-                <div class="result-icon">${initial}</div>
+                 data-path="${escapeHtml(result.path)}"
+                 data-icon-path="${escapeHtml(result.icon_path || '')}">
+                ${iconHtml}
                 <div class="result-info">
                     <div class="result-name">${escapeHtml(result.name)}</div>
                     <div class="result-path">${escapeHtml(shortPath)}</div>
@@ -128,6 +180,30 @@ function renderResults() {
             launchSelected();
         });
     });
+
+    // Load icons asynchronously
+    loadIcons();
+}
+
+async function loadIcons() {
+    for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        const iconTarget = result.icon_path || result.path;
+        if (!iconTarget) continue;
+
+        try {
+            const pngPath = await invoke('get_icon', { exePath: iconTarget });
+            if (pngPath) {
+                const el = document.getElementById(`icon-${i}`);
+                if (el) {
+                    el.innerHTML = `<img src="https://asset.localhost/${pngPath}" width="20" height="20" style="image-rendering: pixelated;" />`;
+                    el.style.background = 'transparent';
+                }
+            }
+        } catch (_) {
+            // Silently fall back to initial letter
+        }
+    }
 }
 
 // ── Window Resizing ─────────────────────────────────────────────────────
@@ -137,10 +213,17 @@ async function resizeWindow() {
 
     // Base height: search bar (~52px) + border (2px)
     const baseHeight = 54;
-    // Each result item is ~47px, footer is ~28px
-    const resultHeight = results.length > 0
-        ? (Math.min(results.length, 8) * 47) + 28
-        : (searchInput.value.trim() !== '' ? 50 : 0); // "No results" message height
+
+    let resultHeight;
+    if (calcResult !== null) {
+        // Calculator mode: result row (~60px) + footer (~28px)
+        resultHeight = 88;
+    } else if (results.length > 0) {
+        // Each result item is ~47px, footer is ~28px
+        resultHeight = (Math.min(results.length, 8) * 47) + 28;
+    } else {
+        resultHeight = searchInput.value.trim() !== '' ? 50 : 0;
+    }
 
     const totalHeight = baseHeight + resultHeight;
 
@@ -179,7 +262,9 @@ searchInput.addEventListener('keydown', async (e) => {
 
         case 'Enter':
             e.preventDefault();
-            if (e.ctrlKey) {
+            if (calcResult && !calcResult.error) {
+                copyCalcResult();
+            } else if (e.ctrlKey) {
                 openSelectedFolder();
             } else {
                 launchSelected();
@@ -191,11 +276,7 @@ searchInput.addEventListener('keydown', async (e) => {
             searchInput.value = '';
             results = [];
             resultsContainer.classList.add('hidden');
-            try {
-                await invoke('hide_window');
-            } catch (err) {
-                console.error('Hide error:', err);
-            }
+            animateHide();
             break;
 
         case 'Tab':
@@ -235,7 +316,7 @@ async function launchSelected() {
         searchInput.value = '';
         results = [];
         resultsContainer.classList.add('hidden');
-        await invoke('hide_window');
+        animateHide();
     } catch (e) {
         console.error('Launch error:', e);
     }
@@ -251,10 +332,47 @@ async function openSelectedFolder() {
         searchInput.value = '';
         results = [];
         resultsContainer.classList.add('hidden');
-        await invoke('hide_window');
+        animateHide();
     } catch (e) {
         console.error('Open folder error:', e);
     }
+}
+
+// ── Calculator ──────────────────────────────────────────────────────
+
+async function copyCalcResult() {
+    if (!calcResult || calcResult.error) return;
+    try {
+        await navigator.clipboard.writeText(calcResult.display);
+        // Brief visual feedback
+        const el = document.getElementById('calc-result-item');
+        if (el) {
+            const hint = el.querySelector('.calc-hint');
+            if (hint) hint.textContent = 'Copied!';
+            setTimeout(() => {
+                searchInput.value = '';
+                calcResult = null;
+                resultsContainer.classList.add('hidden');
+                animateHide();
+            }, 400);
+        }
+    } catch (e) {
+        console.error('Copy error:', e);
+    }
+}
+
+// ── Show/Hide Animation ─────────────────────────────────────────────
+
+function animateHide() {
+    launcher.classList.add('hiding');
+    launcher.addEventListener('animationend', async () => {
+        launcher.classList.remove('hiding');
+        try {
+            await invoke('hide_window');
+        } catch (err) {
+            console.error('Hide error:', err);
+        }
+    }, { once: true });
 }
 
 // ── Utilities ───────────────────────────────────────────────────────────

@@ -1,0 +1,38 @@
+{
+    "productName": "Sovereign Launcher",
+    "version": "0.1.0",
+    "identifier": "com.sovereign-shell.launcher",
+    "build": {
+        "frontendDist": "../src",
+        "devUrl": "http://localhost:1420"
+    },
+    "app": {
+        "windows": [
+            {
+                "title": "Sovereign Launcher",
+                "label": "main",
+                "width": 600,
+                "height": 54,
+                "resizable": false,
+                "decorations": false,
+                "transparent": true,
+                "alwaysOnTop": true,
+                "center": true,
+                "visible": false,
+                "skipTaskbar": true,
+                "shadow": false
+            }
+        ],
+        "security": {
+            "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://asset.localhost"
+        }
+    },
+    "bundle": {
+        "active": true,
+        "targets": ["msi"],
+        "icon": [
+            "icons/icon.png"
+        ],
+        "resources": []
+    }
+}

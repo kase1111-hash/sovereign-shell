@@ -1,7 +1,7 @@
 [module]
 name = "launcher"
-version = "0.1.0"
-status = "scaffold"
+version = "0.2.0"
+status = "alpha"
 description = "Keyboard-driven app and file launcher replacing the Start Menu."
 
 [purpose]
@@ -21,11 +21,11 @@ ipc_protocol = "none"
 
 [boundaries]
 depends_on = []
-system_apis = ["Win32 Shell", "RegisterHotKey"]
-external_deps = ["sqlite", "fuzzy-matcher"]
+system_apis = ["Win32 Shell", "RegisterHotKey", "SHGetFileInfo", "GDI"]
+external_deps = ["sqlite", "fuzzy-matcher", "window-vibrancy"]
 
 [maintenance]
-last_updated = "2026-03-12"
+last_updated = "2026-03-17"
 last_updated_by = "claude-code"
 context_budget = "small"
-known_limitations = ["Scaffold only — no functional code yet"]
+known_limitations = ["Icon extraction is Windows-only", "Vibrancy requires Windows 10 1809+"]
