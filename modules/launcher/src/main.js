@@ -15,6 +15,7 @@ let selectedIndex = 0;
 let results = [];
 let debounceTimer = null;
 const DEBOUNCE_MS = 80;
+const launcher = document.getElementById('launcher');
 
 // ── DOM Elements ────────────────────────────────────────────────────────
 
@@ -38,6 +39,10 @@ async function init() {
 
     // Listen for window-shown events (from hotkey toggle)
     await listen('window-shown', () => {
+        // Replay entrance animation
+        launcher.style.animation = 'none';
+        launcher.offsetHeight; // force reflow
+        launcher.style.animation = '';
         searchInput.focus();
         searchInput.select();
     });
@@ -191,11 +196,7 @@ searchInput.addEventListener('keydown', async (e) => {
             searchInput.value = '';
             results = [];
             resultsContainer.classList.add('hidden');
-            try {
-                await invoke('hide_window');
-            } catch (err) {
-                console.error('Hide error:', err);
-            }
+            animateHide();
             break;
 
         case 'Tab':
@@ -235,7 +236,7 @@ async function launchSelected() {
         searchInput.value = '';
         results = [];
         resultsContainer.classList.add('hidden');
-        await invoke('hide_window');
+        animateHide();
     } catch (e) {
         console.error('Launch error:', e);
     }
@@ -251,10 +252,24 @@ async function openSelectedFolder() {
         searchInput.value = '';
         results = [];
         resultsContainer.classList.add('hidden');
-        await invoke('hide_window');
+        animateHide();
     } catch (e) {
         console.error('Open folder error:', e);
     }
+}
+
+// ── Show/Hide Animation ─────────────────────────────────────────────
+
+function animateHide() {
+    launcher.classList.add('hiding');
+    launcher.addEventListener('animationend', async () => {
+        launcher.classList.remove('hiding');
+        try {
+            await invoke('hide_window');
+        } catch (err) {
+            console.error('Hide error:', err);
+        }
+    }, { once: true });
 }
 
 // ── Utilities ───────────────────────────────────────────────────────────

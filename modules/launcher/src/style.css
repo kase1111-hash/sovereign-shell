@@ -55,6 +55,30 @@ html, body {
     -webkit-user-select: none;
 }
 
+/* ── Show/Hide Animation ──────────────────────────────────────────────── */
+
+@keyframes launcher-show {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes launcher-hide {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+}
+
 /* ── Launcher Container ────────────────────────────────────────────────── */
 
 #launcher {
@@ -64,6 +88,11 @@ html, body {
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg), var(--shadow-glow);
     overflow: hidden;
+    animation: launcher-show 150ms ease-out forwards;
+}
+
+#launcher.hiding {
+    animation: launcher-hide 120ms ease-in forwards;
 }
 
 /* ── Search Bar ────────────────────────────────────────────────────────── */
