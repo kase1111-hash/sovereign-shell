@@ -1,0 +1,35 @@
+{
+  "productName": "Sovereign Net Panel",
+  "version": "0.1.0",
+  "identifier": "com.sovereign-shell.net-panel",
+  "build": {
+    "frontendDist": "../src",
+    "devUrl": "http://localhost:1424"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Sovereign Net Panel",
+        "label": "main",
+        "width": 1000,
+        "height": 650,
+        "minWidth": 700,
+        "minHeight": 400,
+        "resizable": true,
+        "decorations": false,
+        "transparent": true,
+        "center": true,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi"],
+    "icon": ["icons/icon.png"]
+  },
+  "plugins": { "shell": { "open": true } }
+}

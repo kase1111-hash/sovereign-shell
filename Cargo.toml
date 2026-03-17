@@ -8,4 +8,5 @@ members = [
     "modules/explorer/src-tauri",
     "modules/task-monitor/src-tauri",
     "modules/audio-router/src-tauri",
+    "modules/net-panel/src-tauri",
 ]

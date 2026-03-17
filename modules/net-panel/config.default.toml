@@ -1,0 +1,10 @@
+[general]
+update_interval_ms = 1000
+show_loopback = false
+
+[dns]
+preferred_servers = ["1.1.1.1", "9.9.9.9"]
+
+[diagnostics]
+default_ping_count = 10
+default_traceroute_max_hops = 30
