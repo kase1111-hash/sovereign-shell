@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sovereign Audio Router</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="audio-router">
+        <!-- Title bar -->
+        <div id="titlebar" data-tauri-drag-region>
+            <div class="titlebar-title" data-tauri-drag-region>Sovereign Audio Router</div>
+            <div class="titlebar-buttons">
+                <button id="btn-minimize" class="titlebar-btn">&#x2212;</button>
+                <button id="btn-maximize" class="titlebar-btn">&#x25A1;</button>
+                <button id="btn-close" class="titlebar-btn titlebar-close">&#x2715;</button>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div id="content">
+            <!-- Output Devices section -->
+            <div id="devices-section"></div>
+
+            <!-- Divider -->
+            <div class="section-divider"></div>
+
+            <!-- Application Mixer section -->
+            <div id="sessions-section"></div>
+        </div>
+
+        <!-- Status bar -->
+        <div id="status-bar">
+            <span id="status-devices">0 devices</span>
+            <span id="status-sessions">0 sessions</span>
+        </div>
+    </div>
+
+    <script src="components/device-list.js"></script>
+    <script src="components/session-mixer.js"></script>
+    <script src="components/level-meters.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
