@@ -9,4 +9,5 @@ members = [
     "modules/task-monitor/src-tauri",
     "modules/audio-router/src-tauri",
     "modules/net-panel/src-tauri",
+    "modules/notify-queue/src-tauri",
 ]
