@@ -5,4 +5,5 @@ members = [
     "shared/ipc",
     "modules/launcher/src-tauri",
     "modules/search-daemon",
+    "modules/explorer/src-tauri",
 ]

@@ -1,0 +1,39 @@
+{
+  "productName": "Sovereign Explorer",
+  "version": "0.1.0",
+  "identifier": "com.sovereign-shell.explorer",
+  "build": {
+    "frontendDist": "../src",
+    "devUrl": "http://localhost:1421"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Sovereign Explorer",
+        "label": "main",
+        "width": 1100,
+        "height": 700,
+        "minWidth": 600,
+        "minHeight": 400,
+        "resizable": true,
+        "decorations": false,
+        "transparent": true,
+        "center": true,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://asset.localhost blob: data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi"],
+    "icon": ["icons/icon.png"]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
+  }
+}
