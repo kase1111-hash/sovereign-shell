@@ -34,6 +34,12 @@ pub fn record_launch(id: i64, state: State<'_, AppState>) -> Result<(), String> 
 /// Uses ShellExecuteW on Windows for proper .lnk handling.
 #[tauri::command]
 pub fn launch_app(path: &str) -> Result<(), String> {
+    // Validate: must be a file path, not a URL or protocol handler
+    let p = std::path::Path::new(path);
+    if !p.exists() {
+        return Err(format!("Path does not exist: {}", path));
+    }
+
     #[cfg(windows)]
     {
         use std::os::windows::ffi::OsStrExt;
