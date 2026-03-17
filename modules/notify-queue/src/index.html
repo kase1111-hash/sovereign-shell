@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notification Queue — Sovereign Shell</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="titlebar">
+        <div class="titlebar-title">Notifications</div>
+        <div class="titlebar-controls">
+            <button class="tb-btn" id="btn-silent" title="Toggle Silent Mode">🔔</button>
+            <button class="tb-btn" id="btn-minimize">&#x2013;</button>
+            <button class="tb-btn" id="btn-maximize">&#x25A1;</button>
+            <button class="tb-btn tb-close" id="btn-close">&#x2715;</button>
+        </div>
+    </div>
+
+    <nav id="tabs">
+        <button class="tab-btn active" data-view="queue">Queue</button>
+        <button class="tab-btn" data-view="history">History</button>
+        <button class="tab-btn" data-view="rules">Rules</button>
+    </nav>
+
+    <main id="content">
+        <div id="view-queue" class="view active"></div>
+        <div id="view-history" class="view"></div>
+        <div id="view-rules" class="view"></div>
+    </main>
+
+    <!-- Toast container is absolutely positioned -->
+    <div id="toast-container"></div>
+
+    <script src="components/toast.js"></script>
+    <script src="components/queue-panel.js"></script>
+    <script src="components/history-search.js"></script>
+    <script src="components/rules-editor.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

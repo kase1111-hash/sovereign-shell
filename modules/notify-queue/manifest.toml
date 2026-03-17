@@ -1,0 +1,13 @@
+[module]
+name = "notify-queue"
+display_name = "Notification Queue"
+version = "0.1.0"
+description = "Unified notification system — toast popups, queue panel, per-app rules, searchable history"
+category = "system"
+
+[module.capabilities]
+requires_admin = false
+platforms = ["windows", "linux"]
+
+[module.dependencies]
+shared = ["sovereign_config", "sovereign_ipc"]

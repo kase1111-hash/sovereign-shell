@@ -1,0 +1,25 @@
+[general]
+max_queue_size = 500
+silent_mode = false
+
+[toast]
+position = "bottom-right"
+default_duration_seconds = 5
+max_visible = 3
+
+[history]
+retention_days = 30
+purge_interval_hours = 24
+
+[rules.default]
+action = "show"
+duration_seconds = 5
+
+# Example per-app rules:
+# [rules."Microsoft.Windows.Explorer"]
+# action = "block"
+#
+# [rules."discord.exe"]
+# action = "show"
+# duration_seconds = 8
+# priority = "high"

@@ -1,0 +1,39 @@
+{
+    "productName": "Sovereign Notify Queue",
+    "version": "0.1.0",
+    "identifier": "com.sovereign-shell.notify-queue",
+    "build": {
+        "frontendDist": "../src",
+        "devUrl": "http://localhost:1425"
+    },
+    "app": {
+        "withGlobalTauri": true,
+        "windows": [
+            {
+                "label": "queue-panel",
+                "title": "Notification Queue",
+                "width": 420,
+                "height": 680,
+                "resizable": true,
+                "decorations": false,
+                "transparent": true,
+                "visible": false,
+                "alwaysOnTop": true
+            },
+            {
+                "label": "toast",
+                "title": "Toast",
+                "width": 360,
+                "height": 100,
+                "resizable": false,
+                "decorations": false,
+                "transparent": true,
+                "visible": false,
+                "alwaysOnTop": true,
+                "skipTaskbar": true,
+                "x": -1,
+                "y": -1
+            }
+        ]
+    }
+}
