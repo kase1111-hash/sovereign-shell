@@ -256,6 +256,51 @@ html, body {
     margin-right: 3px;
 }
 
+/* ── Calculator Mode ───────────────────────────────────────────────────── */
+
+.calc-result {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.calc-result:hover {
+    background: var(--bg-hover);
+}
+
+.calc-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 212, 255, 0.15);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+.calc-value {
+    flex: 1;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+}
+
+.calc-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
 /* ── No Results ────────────────────────────────────────────────────────── */
 
 .no-results {
@@ -263,4 +308,11 @@ html, body {
     text-align: center;
     color: var(--text-muted);
     font-size: 13px;
+}
+
+/* ── Icon images ──────────────────────────────────────────────────────── */
+
+.result-icon img {
+    display: block;
+    border-radius: 2px;
 }

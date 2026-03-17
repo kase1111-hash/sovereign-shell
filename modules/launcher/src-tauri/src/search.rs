@@ -4,13 +4,15 @@
 //! via `invoke()`.
 
 use crate::db::{Database, SearchResult};
-use std::sync::Mutex;
+use crate::icons::IconCache;
+use std::sync::{Arc, Mutex};
 use tauri::State;
 
 /// Shared application state.
 pub struct AppState {
     pub db: Mutex<Database>,
     pub max_results: usize,
+    pub icon_cache: Arc<IconCache>,
 }
 
 /// Search for applications matching the query.
@@ -98,4 +100,28 @@ pub fn open_containing_folder(path: &str) -> Result<(), String> {
 pub fn get_index_count(state: State<'_, AppState>) -> Result<i64, String> {
     let db = state.db.lock().map_err(|e| format!("Lock error: {e}"))?;
     db.count().map_err(|e| format!("DB error: {e}"))
+}
+
+/// Evaluate a math expression (calculator mode).
+/// Returns a JSON object with `result` (formatted string) and `value` (f64).
+#[tauri::command]
+pub fn evaluate_calc(expr: &str) -> Result<CalcResult, String> {
+    let value = crate::calc::evaluate(expr)?;
+    Ok(CalcResult {
+        display: crate::calc::format_result(value),
+        value,
+    })
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct CalcResult {
+    pub display: String,
+    pub value: f64,
+}
+
+/// Get the cached icon path for an executable.
+/// Returns the local file path to a PNG icon, or null if unavailable.
+#[tauri::command]
+pub fn get_icon(exe_path: &str, state: State<'_, AppState>) -> Option<String> {
+    state.icon_cache.get_or_extract(exe_path)
 }

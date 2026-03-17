@@ -5,15 +5,18 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod calc;
 mod config;
 mod db;
+mod icons;
 mod indexer;
 mod search;
 
 use config::LauncherConfig;
 use db::Database;
+use icons::IconCache;
 use search::AppState;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use tauri::{Emitter, Manager};
 
 /// Register a global hotkey using Win32 API.
@@ -126,9 +129,16 @@ fn main() {
         Err(e) => eprintln!("[launcher] Indexing error: {}", e),
     }
 
+    // Initialize icon cache
+    let icon_cache_dir = sovereign_config::data_dir("launcher")
+        .map(|d| d.join("icon-cache"))
+        .unwrap_or_else(|_| std::env::temp_dir().join("sovereign-launcher-icons"));
+    let icon_cache = Arc::new(IconCache::new(icon_cache_dir));
+
     let app_state = AppState {
         db: Mutex::new(db),
         max_results,
+        icon_cache,
     };
 
     tauri::Builder::default()
@@ -142,6 +152,8 @@ fn main() {
             search::launch_app,
             search::open_containing_folder,
             search::get_index_count,
+            search::evaluate_calc,
+            search::get_icon,
         ])
         .setup(move |app| {
             let handle = app.handle().clone();
@@ -172,6 +184,13 @@ fn main() {
                     let _ = win2.hide();
                 }
             });
+
+            // Apply window vibrancy effect (Windows acrylic blur)
+            #[cfg(windows)]
+            if config_clone.appearance.enable_vibrancy {
+                use window_vibrancy::apply_acrylic;
+                let _ = apply_acrylic(&main_window, Some((18, 18, 26, 200)));
+            }
 
             // Periodic re-indexing
             let handle2 = handle.clone();

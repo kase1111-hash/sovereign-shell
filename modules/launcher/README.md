@@ -6,6 +6,14 @@ Keyboard-driven app launcher replacing the Windows Start Menu.
 
 Press `Alt+Space` to activate. Type to search. `Enter` to launch. `Escape` to dismiss.
 
+### Calculator Mode
+
+Type `=` followed by a math expression to evaluate it inline. Press `Enter` to copy the result to your clipboard.
+
+Examples: `=2+3*4`, `=sqrt(144)`, `=sin(pi/2)`, `=log(1000)`
+
+Supports: `+`, `-`, `*`, `/`, `%`, `^` (power), parentheses, and functions (`sqrt`, `sin`, `cos`, `tan`, `abs`, `ln`, `log`, `ceil`, `floor`, `round`, `min`, `max`, `pow`). Constants: `pi`, `e`, `tau`.
+
 ## Keyboard Shortcuts
 
 | Key | Action |

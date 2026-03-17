@@ -26,6 +26,7 @@ pub struct SearchResult {
     pub path: String,
     pub launch_count: i64,
     pub score: f64,
+    pub icon_path: Option<String>,
 }
 
 pub struct Database {
@@ -138,7 +139,7 @@ impl Database {
         if query.trim().is_empty() {
             // Return most-launched apps when query is empty
             let mut stmt = self.conn.prepare(
-                "SELECT id, name, path, launch_count
+                "SELECT id, name, path, launch_count, icon_path
                  FROM apps
                  ORDER BY launch_count DESC, name ASC
                  LIMIT ?1",
@@ -151,6 +152,7 @@ impl Database {
                         path: row.get(2)?,
                         launch_count: row.get(3)?,
                         score: 1.0,
+                        icon_path: row.get(4)?,
                     })
                 })?
                 .filter_map(|r| r.ok())
@@ -167,7 +169,7 @@ impl Database {
 
         let mut stmt = self.conn.prepare(
             "SELECT a.id, a.name, a.path, a.launch_count,
-                    bm25(apps_fts, 10.0, 1.0) as rank
+                    bm25(apps_fts, 10.0, 1.0) as rank, a.icon_path
              FROM apps_fts f
              JOIN apps a ON a.id = f.rowid
              WHERE apps_fts MATCH ?1
@@ -183,6 +185,7 @@ impl Database {
                     path: row.get(2)?,
                     launch_count: row.get(3)?,
                     score: row.get::<_, f64>(4)?.abs(),
+                    icon_path: row.get(5)?,
                 })
             })?
             .filter_map(|r| r.ok())
