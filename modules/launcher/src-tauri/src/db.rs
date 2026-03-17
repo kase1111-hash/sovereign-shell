@@ -160,10 +160,14 @@ impl Database {
             return Ok(results);
         }
 
-        // Prepare FTS5 query — add * for prefix matching on each term
+        // Prepare FTS5 query — add * for prefix matching on each term.
+        // Sanitize: quote each term to prevent FTS5 operator injection.
         let fts_query: String = query
             .split_whitespace()
-            .map(|term| format!("{}*", term.replace('"', "")))
+            .map(|term| {
+                let sanitized = term.replace('"', "");
+                format!("\"{}\"*", sanitized)
+            })
             .collect::<Vec<_>>()
             .join(" ");
 

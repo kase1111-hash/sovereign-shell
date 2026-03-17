@@ -2,6 +2,25 @@
 
 use serde::{Deserialize, Serialize};
 
+/// Sanitize a string for PowerShell single-quoted strings.
+fn sanitize_ps_arg(s: &str) -> Result<String, String> {
+    if s.bytes().any(|b| b == 0 || (b < 0x20 && b != b'\t')) {
+        return Err("Input contains invalid characters".to_string());
+    }
+    Ok(s.replace('\'', "''"))
+}
+
+/// Validate a firewall rule field: reject shell metacharacters.
+fn validate_rule_field(field: &str, name: &str) -> Result<(), String> {
+    if field.is_empty() { return Ok(()); }
+    // Allow alphanumeric, spaces, hyphens, underscores, dots, colons, slashes (for paths)
+    if field.chars().all(|c| c.is_alphanumeric() || " -_.:/\\".contains(c)) {
+        Ok(())
+    } else {
+        Err(format!("Invalid characters in {}: {}", name, field))
+    }
+}
+
 /// A firewall rule.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FirewallRule {
@@ -119,10 +138,11 @@ fn get_rules_iptables() -> Result<Vec<FirewallRule>, String> {
 pub fn toggle_rule(name: &str, enabled: bool) -> Result<(), String> {
     #[cfg(windows)]
     {
+        let safe_name = sanitize_ps_arg(name)?;
         let action = if enabled { "Enable" } else { "Disable" };
         let output = std::process::Command::new("powershell")
             .args(["-NoProfile", "-Command",
-                &format!("{}-NetFirewallRule -DisplayName '{}'", action, name)])
+                &format!("{}-NetFirewallRule -DisplayName '{}'", action, safe_name)])
             .output()
             .map_err(|e| format!("{e}"))?;
         if output.status.success() { Ok(()) }
@@ -138,19 +158,33 @@ pub fn toggle_rule(name: &str, enabled: bool) -> Result<(), String> {
 pub fn create_rule(rule: &FirewallRule) -> Result<(), String> {
     #[cfg(windows)]
     {
+        // Validate all fields before constructing the command
+        let safe_name = sanitize_ps_arg(&rule.name)?;
+        validate_rule_field(&rule.protocol, "protocol")?;
+        validate_rule_field(&rule.local_port, "local_port")?;
+        validate_rule_field(&rule.action, "action")?;
+        validate_rule_field(&rule.direction, "direction")?;
+
         let dir = if rule.direction == "In" { "Inbound" } else { "Outbound" };
+
+        // Validate action is one of the allowed values
+        if rule.action != "Allow" && rule.action != "Block" {
+            return Err("Action must be 'Allow' or 'Block'".to_string());
+        }
+
         let mut cmd = format!(
             "New-NetFirewallRule -DisplayName '{}' -Direction {} -Action {}",
-            rule.name, dir, rule.action
+            safe_name, dir, rule.action
         );
-        if rule.protocol != "Any" {
+        if rule.protocol != "Any" && !rule.protocol.is_empty() {
             cmd += &format!(" -Protocol {}", rule.protocol);
         }
         if rule.local_port != "Any" && !rule.local_port.is_empty() {
             cmd += &format!(" -LocalPort {}", rule.local_port);
         }
         if !rule.program.is_empty() {
-            cmd += &format!(" -Program '{}'", rule.program);
+            let safe_program = sanitize_ps_arg(&rule.program)?;
+            cmd += &format!(" -Program '{}'", safe_program);
         }
 
         let output = std::process::Command::new("powershell")

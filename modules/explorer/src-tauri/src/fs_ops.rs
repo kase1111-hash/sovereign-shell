@@ -138,6 +138,9 @@ pub fn rename_item(path: &str, new_name: &str) -> Result<String, String> {
 
 /// Create a new directory.
 pub fn create_directory(parent: &str, name: &str) -> Result<String, String> {
+    if name.is_empty() || name.contains('/') || name.contains('\\') || name.contains("..") {
+        return Err("Invalid directory name".to_string());
+    }
     let dir_path = PathBuf::from(parent).join(name);
     if dir_path.exists() {
         return Err(format!("'{}' already exists", name));
@@ -151,6 +154,9 @@ pub fn create_directory(parent: &str, name: &str) -> Result<String, String> {
 
 /// Create a new empty file.
 pub fn create_file(parent: &str, name: &str) -> Result<String, String> {
+    if name.is_empty() || name.contains('/') || name.contains('\\') || name.contains("..") {
+        return Err("Invalid file name".to_string());
+    }
     let file_path = PathBuf::from(parent).join(name);
     if file_path.exists() {
         return Err(format!("'{}' already exists", name));
