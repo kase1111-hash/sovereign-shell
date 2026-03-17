@@ -1,0 +1,35 @@
+[module]
+name = "explorer"
+version = "0.1.0"
+status = "alpha"
+description = "File explorer replacing Windows explorer.exe as a file manager."
+
+[purpose]
+narrative = """
+Windows File Explorer has become sluggish, cluttered with OneDrive/SharePoint
+integration, and increasingly hostile to power users. This module provides a
+fast, keyboard-driven, tabbed file manager with search integration, archive
+handling, batch rename, preview pane, and zero cloud dependencies.
+"""
+
+[architecture]
+language = "rust + vanilla js"
+framework = "tauri v2"
+entry_point = "src-tauri/src/main.rs"
+frontend = "src/index.html"
+
+[boundaries]
+depends_on = ["sovereign_config", "sovereign_ipc", "search-daemon"]
+system_apis = ["std::fs", "trash crate", "zip crate"]
+external_deps = ["tauri", "walkdir", "sha2", "zip", "trash", "open", "regex-lite"]
+
+[maintenance]
+last_updated = "2026-03-17"
+last_updated_by = "claude-code"
+context_budget = "large"
+known_limitations = [
+    "No embedded PTY terminal yet (placeholder UI)",
+    "No Miller column view yet",
+    "No PDF/DOCX content extraction in search",
+    "Grid view uses emoji icons (no native icon extraction yet)",
+]

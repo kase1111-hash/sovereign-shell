@@ -1,0 +1,33 @@
+# Sovereign Search Daemon — Default Configuration
+# Copy to %APPDATA%\SovereignShell\search-daemon\config.toml to customize.
+
+[indexing]
+# Root directories to watch and index (defaults to user profile)
+# watched_dirs = ["C:\\Users\\YourName"]
+exclude_patterns = [
+    "node_modules",
+    ".git",
+    "target",
+    "__pycache__",
+    ".cache",
+    "AppData\\Local\\Temp",
+]
+content_index_extensions = [
+    ".txt", ".md", ".log", ".csv",
+    ".html", ".htm",
+    ".rs", ".py", ".js", ".ts",
+    ".toml", ".json", ".yaml", ".yml",
+    ".ps1", ".bat", ".sh",
+    ".c", ".cpp", ".h", ".hpp",
+    ".java", ".go", ".rb",
+]
+max_content_size_mb = 10
+reindex_interval_hours = 24
+
+[performance]
+batch_size = 500
+index_throttle_ms = 10
+max_memory_mb = 256
+
+[ipc]
+pipe_name = "search-daemon"

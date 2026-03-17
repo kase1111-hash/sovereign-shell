@@ -1,0 +1,41 @@
+[package]
+name = "sovereign-explorer"
+version = "0.1.0"
+edition = "2021"
+description = "File explorer replacing Windows explorer.exe as a file manager"
+
+[lib]
+name = "sovereign_explorer_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+sovereign_config = { path = "../../../shared/config" }
+sovereign_ipc = { path = "../../../shared/ipc" }
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+rusqlite = { version = "0.31", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+walkdir = "2"
+chrono = { version = "0.4", features = ["serde"] }
+log = "0.4"
+env_logger = "0.11"
+zip = "2"
+trash = "5"
+open = "5"
+sha2 = "0.10"
+regex-lite = "0.1"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_Storage_FileSystem",
+    "Win32_UI_Shell",
+    "Win32_System_Com",
+    "Win32_Graphics_Gdi",
+] }
+window-vibrancy = "0.5"

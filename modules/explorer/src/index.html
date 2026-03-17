@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sovereign Explorer</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="explorer">
+        <!-- Title bar (custom, since decorations=false) -->
+        <div id="titlebar" data-tauri-drag-region>
+            <div class="titlebar-title" data-tauri-drag-region>Sovereign Explorer</div>
+            <div class="titlebar-buttons">
+                <button id="btn-minimize" class="titlebar-btn" title="Minimize">&#x2212;</button>
+                <button id="btn-maximize" class="titlebar-btn" title="Maximize">&#x25A1;</button>
+                <button id="btn-close" class="titlebar-btn titlebar-close" title="Close">&#x2715;</button>
+            </div>
+        </div>
+
+        <!-- Tab bar -->
+        <div id="tab-bar"></div>
+
+        <!-- Toolbar: breadcrumb + search -->
+        <div id="toolbar">
+            <div id="nav-buttons">
+                <button id="btn-back" class="nav-btn" title="Back (Alt+Left)">&#x2190;</button>
+                <button id="btn-forward" class="nav-btn" title="Forward (Alt+Right)">&#x2192;</button>
+                <button id="btn-up" class="nav-btn" title="Up (Backspace)">&#x2191;</button>
+            </div>
+            <div id="breadcrumb"></div>
+            <div id="search-bar"></div>
+        </div>
+
+        <!-- Main content area -->
+        <div id="main-content">
+            <!-- Sidebar -->
+            <div id="sidebar"></div>
+            <div id="sidebar-resizer" class="resizer"></div>
+
+            <!-- File listing -->
+            <div id="file-list"></div>
+
+            <!-- Preview pane -->
+            <div id="preview-resizer" class="resizer"></div>
+            <div id="preview-pane"></div>
+        </div>
+
+        <!-- Terminal pane -->
+        <div id="terminal-pane" class="hidden"></div>
+
+        <!-- Status bar -->
+        <div id="status-bar">
+            <span id="status-items">0 items</span>
+            <span id="status-selected"></span>
+            <span id="status-size"></span>
+        </div>
+
+        <!-- Context menu -->
+        <div id="context-menu" class="hidden"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="utils/keybindings.js"></script>
+    <script src="utils/drag-drop.js"></script>
+    <script src="components/tab-bar.js"></script>
+    <script src="components/breadcrumb.js"></script>
+    <script src="components/sidebar.js"></script>
+    <script src="components/file-list.js"></script>
+    <script src="components/preview.js"></script>
+    <script src="components/search-bar.js"></script>
+    <script src="components/context-menu.js"></script>
+    <script src="components/terminal.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

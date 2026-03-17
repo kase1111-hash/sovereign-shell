@@ -1,0 +1,20 @@
+# Sovereign Explorer — Default Configuration
+# Copy to %APPDATA%\SovereignShell\explorer\config.toml to customize.
+
+[general]
+default_view = "list"               # list | grid
+show_hidden_files = false
+show_file_extensions = true
+confirm_delete = true
+terminal_follows_navigation = true
+default_shell = "powershell"
+
+[sidebar]
+show_drives = true
+bookmarks = []                      # Extra bookmarks beyond auto-detected ones
+
+[appearance]
+icon_size_grid = 48
+preview_pane_default = false
+terminal_pane_default = false
+enable_vibrancy = true

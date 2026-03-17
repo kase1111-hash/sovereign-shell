@@ -1,0 +1,31 @@
+[module]
+name = "search-daemon"
+version = "0.1.0"
+status = "alpha"
+description = "Headless file indexing and search daemon replacing Windows Search (WSearch)."
+
+[purpose]
+narrative = """
+Windows Search is opaque, resource-hungry, and increasingly tied to Bing and
+cloud results nobody asked for. This daemon replaces it with a local SQLite FTS5
+index that crawls user directories, watches for changes, and serves search
+queries over a named pipe. No cloud. No telemetry. Fast ranked results with
+content snippets.
+"""
+
+[architecture]
+language = "rust"
+framework = "none"
+entry_point = "src/main.rs"
+ipc_protocol = "named-pipe"
+
+[boundaries]
+depends_on = ["sovereign_config", "sovereign_ipc"]
+system_apis = ["ReadDirectoryChangesW (via notify crate)"]
+external_deps = ["sqlite", "walkdir", "notify"]
+
+[maintenance]
+last_updated = "2026-03-17"
+last_updated_by = "claude-code"
+context_budget = "medium"
+known_limitations = ["No PDF/DOCX content extraction yet", "IPC server is single-client"]
