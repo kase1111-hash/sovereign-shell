@@ -1,0 +1,439 @@
+/* ── Sovereign Task Monitor — Theme ──────────────────────────────── */
+
+:root {
+    --bg-primary: #12121a;
+    --bg-secondary: #1a1a2e;
+    --bg-tertiary: #222238;
+    --bg-hover: #2a2a44;
+    --bg-selected: #333355;
+
+    --text-primary: #e8e8ee;
+    --text-secondary: #8888a0;
+    --text-muted: #555570;
+
+    --accent: #00d4ff;
+    --accent-dim: #0099bb;
+
+    --border: #2a2a3e;
+
+    --danger: #ff4466;
+    --warning: #ffaa33;
+    --success: #44ff88;
+
+    --cpu-color: #00d4ff;
+    --mem-color: #cc66ff;
+    --disk-color: #44ff88;
+    --net-color: #ffaa33;
+
+    --font-mono: 'Cascadia Code', 'Consolas', monospace;
+    --font-sans: 'Segoe UI', system-ui, sans-serif;
+
+    --titlebar-height: 32px;
+    --tabbar-height: 36px;
+    --statusbar-height: 28px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    overflow: hidden;
+    user-select: none;
+}
+
+#task-monitor {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* ── Title Bar ─────────────────────────────────────────────────────── */
+
+#titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--titlebar-height);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 0 8px;
+}
+
+.titlebar-title { font-size: 12px; color: var(--text-secondary); }
+.titlebar-buttons { display: flex; gap: 2px; }
+.titlebar-btn {
+    width: 32px; height: 24px;
+    background: transparent; border: none;
+    color: var(--text-secondary); font-size: 12px;
+    cursor: pointer; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+}
+.titlebar-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.titlebar-close:hover { background: var(--danger); color: white; }
+
+/* ── View Tabs ─────────────────────────────────────────────────────── */
+
+#view-tabs {
+    display: flex;
+    height: var(--tabbar-height);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 0 8px;
+    gap: 2px;
+    align-items: flex-end;
+}
+
+.view-tab {
+    padding: 6px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    border-bottom: 2px solid transparent;
+}
+
+.view-tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+.view-tab.active {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-bottom-color: var(--accent);
+}
+
+/* ── Content ───────────────────────────────────────────────────────── */
+
+#content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.view {
+    display: none;
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+}
+
+.view.active { display: block; }
+
+/* ── Process Table ─────────────────────────────────────────────────── */
+
+.process-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    gap: 8px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+.process-toolbar input {
+    flex: 1;
+    height: 26px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    padding: 0 8px;
+    font-size: 12px;
+    outline: none;
+}
+
+.process-toolbar input:focus { border-color: var(--accent); }
+
+.toolbar-btn {
+    padding: 4px 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.toolbar-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.toolbar-btn.active { background: var(--accent-dim); color: white; border-color: var(--accent); }
+.toolbar-btn.danger { color: var(--danger); }
+.toolbar-btn.danger:hover { background: rgba(255,68,102,0.15); }
+
+.proc-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.proc-table th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+    padding: 6px 8px;
+    text-align: left;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.proc-table th:hover { color: var(--text-primary); }
+
+.proc-table td {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-bottom: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.proc-table tr:hover { background: var(--bg-hover); }
+.proc-table tr.selected { background: var(--bg-selected); }
+
+.proc-table .col-pid { width: 70px; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); }
+.proc-table .col-cpu { width: 70px; text-align: right; font-family: var(--font-mono); }
+.proc-table .col-mem { width: 90px; text-align: right; font-family: var(--font-mono); }
+.proc-table .col-disk { width: 90px; text-align: right; font-family: var(--font-mono); color: var(--text-secondary); }
+.proc-table .col-status { width: 80px; }
+
+/* CPU color coding */
+.cpu-low { color: var(--success); }
+.cpu-med { color: var(--warning); }
+.cpu-high { color: var(--danger); }
+
+/* ── Process Tree ──────────────────────────────────────────────────── */
+
+.tree-row {
+    display: flex;
+    align-items: center;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.tree-row:hover { background: var(--bg-hover); }
+.tree-row.selected { background: var(--bg-selected); }
+
+.tree-indent { width: 20px; flex-shrink: 0; }
+.tree-toggle-btn {
+    width: 16px; font-size: 10px; cursor: pointer;
+    color: var(--text-muted); text-align: center; flex-shrink: 0;
+}
+.tree-name { flex: 1; margin-left: 4px; }
+.tree-pid { width: 60px; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); }
+.tree-cpu { width: 60px; text-align: right; font-family: var(--font-mono); }
+.tree-mem { width: 80px; text-align: right; font-family: var(--font-mono); }
+
+/* ── Performance Graphs ────────────────────────────────────────────── */
+
+.perf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px;
+}
+
+.perf-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.perf-card-title {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.perf-card-value {
+    font-size: 24px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    margin-bottom: 8px;
+}
+
+.perf-card canvas {
+    width: 100%;
+    height: 80px;
+    border-radius: 4px;
+}
+
+.perf-card-detail {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* ── Services ──────────────────────────────────────────────────────── */
+
+.svc-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.svc-table th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+    padding: 6px 8px;
+    text-align: left;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.svc-table td {
+    padding: 5px 8px;
+    font-size: 12px;
+}
+
+.svc-table tr:hover { background: var(--bg-hover); }
+
+.svc-status-running { color: var(--success); }
+.svc-status-stopped { color: var(--text-muted); }
+
+.svc-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.svc-action-btn {
+    padding: 2px 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.svc-action-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ── File Lock Finder ──────────────────────────────────────────────── */
+
+.lock-finder {
+    padding: 16px;
+}
+
+.lock-finder-input {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.lock-finder-input input {
+    flex: 1;
+    height: 32px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    padding: 0 12px;
+    font-size: 13px;
+    outline: none;
+}
+
+.lock-finder-input input:focus { border-color: var(--accent); }
+
+.lock-finder-btn {
+    padding: 0 16px;
+    background: var(--accent-dim);
+    border: none;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.lock-finder-btn:hover { background: var(--accent); }
+
+.lock-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.lock-result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.lock-result-name { font-size: 14px; font-weight: 500; }
+.lock-result-pid { font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); }
+.lock-result-desc { font-size: 11px; color: var(--text-muted); }
+
+.lock-kill-btn {
+    padding: 4px 12px;
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.lock-kill-btn:hover { background: rgba(255,68,102,0.15); }
+
+/* ── Status Bar ────────────────────────────────────────────────────── */
+
+#status-bar {
+    display: flex;
+    align-items: center;
+    height: var(--statusbar-height);
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: 0 12px;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Context Menu ──────────────────────────────────────────────────── */
+
+.ctx-menu {
+    position: fixed;
+    min-width: 160px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 1000;
+}
+
+.ctx-menu.hidden { display: none; }
+
+.ctx-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.ctx-item:hover { background: rgba(0,212,255,0.08); color: var(--accent); }
+.ctx-item.danger:hover { background: rgba(255,68,102,0.1); color: var(--danger); }
+.ctx-separator { height: 1px; background: var(--border); margin: 4px 8px; }

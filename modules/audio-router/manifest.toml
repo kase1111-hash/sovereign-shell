@@ -1,0 +1,42 @@
+[module]
+name = "audio-router"
+version = "0.1.0"
+status = "alpha"
+description = "Per-application audio routing and volume control replacing Windows Volume Mixer."
+
+[purpose]
+narrative = """
+Windows Volume Mixer is a joke — a flat list of sliders with no routing
+capability. This module provides per-app volume control with output device
+routing, live audio level meters, and preset support. Route Discord to your
+headset and Spotify to your speakers from one panel.
+"""
+
+[architecture]
+language = "rust + vanilla js"
+framework = "tauri v2"
+entry_point = "src-tauri/src/main.rs"
+frontend = "src/index.html"
+
+[boundaries]
+depends_on = ["sovereign_config"]
+system_apis = [
+    "IMMDeviceEnumerator",
+    "IAudioSessionManager2",
+    "ISimpleAudioVolume",
+    "IAudioMeterInformation",
+    "IAudioEndpointVolume",
+]
+external_deps = ["tauri", "windows"]
+
+[maintenance]
+last_updated = "2026-03-17"
+last_updated_by = "claude-code"
+context_budget = "medium"
+known_limitations = [
+    "Per-app device routing requires IPolicyConfig (undocumented, not yet implemented)",
+    "Setting default device not yet implemented",
+    "Event-driven hot-plug uses polling instead of COM callbacks",
+    "No system tray integration yet",
+    "Non-Windows platforms get stub implementations",
+]

@@ -1,0 +1,32 @@
+[package]
+name = "sovereign-net-panel"
+version = "0.1.0"
+edition = "2021"
+description = "Unified network panel replacing Windows Settings/Network, ncpa.cpl, and network diagnostics"
+
+[lib]
+name = "sovereign_net_panel_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+sovereign_config = { path = "../../../shared/config" }
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.31"
+log = "0.4"
+env_logger = "0.11"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_NetworkManagement_IpHelper",
+    "Win32_NetworkManagement_Ndis",
+    "Win32_Networking_WinSock",
+    "Win32_System_Threading",
+] }
+window-vibrancy = "0.5"

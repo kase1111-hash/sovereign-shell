@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Network Panel — Sovereign Shell</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="titlebar">
+        <div class="titlebar-title">Network Panel</div>
+        <div class="titlebar-controls">
+            <button class="tb-btn" id="btn-minimize">&#x2013;</button>
+            <button class="tb-btn" id="btn-maximize">&#x25A1;</button>
+            <button class="tb-btn tb-close" id="btn-close">&#x2715;</button>
+        </div>
+    </div>
+
+    <nav id="sidebar">
+        <button class="nav-btn active" data-view="adapters">Adapters</button>
+        <button class="nav-btn" data-view="connections">Connections</button>
+        <button class="nav-btn" data-view="firewall">Firewall</button>
+        <button class="nav-btn" data-view="diagnostics">Diagnostics</button>
+        <button class="nav-btn" data-view="bandwidth">Bandwidth</button>
+    </nav>
+
+    <main id="content">
+        <div id="view-adapters" class="view active"></div>
+        <div id="view-connections" class="view"></div>
+        <div id="view-firewall" class="view"></div>
+        <div id="view-diagnostics" class="view"></div>
+        <div id="view-bandwidth" class="view"></div>
+    </main>
+
+    <script src="components/adapter-list.js"></script>
+    <script src="components/connection-table.js"></script>
+    <script src="components/firewall-rules.js"></script>
+    <script src="components/diagnostics.js"></script>
+    <script src="components/bandwidth-graph.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

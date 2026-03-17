@@ -1,0 +1,39 @@
+{
+  "productName": "Sovereign Task Monitor",
+  "version": "0.1.0",
+  "identifier": "com.sovereign-shell.task-monitor",
+  "build": {
+    "frontendDist": "../src",
+    "devUrl": "http://localhost:1422"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Sovereign Task Monitor",
+        "label": "main",
+        "width": 1000,
+        "height": 650,
+        "minWidth": 700,
+        "minHeight": 400,
+        "resizable": true,
+        "decorations": false,
+        "transparent": true,
+        "center": true,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi"],
+    "icon": ["icons/icon.png"]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
+  }
+}

@@ -1,0 +1,16 @@
+# Sovereign Audio Router — Default Configuration
+
+[general]
+update_interval_ms = 50           # Level meter update rate
+show_inactive_sessions = false
+
+# Routing rules (per-app device assignment)
+# [[routing_rules]]
+# process_name = "discord.exe"
+# device_id = ""
+# device_name = "Headset (HyperX)"
+
+# Routing presets
+# [routing_presets.gaming]
+# "discord.exe" = "Headset (HyperX)"
+# "*" = "Speakers (Realtek)"

@@ -1,0 +1,35 @@
+[package]
+name = "sovereign-task-monitor"
+version = "0.1.0"
+edition = "2021"
+description = "Task monitor replacing Windows Task Manager with Process Explorer-level depth"
+
+[lib]
+name = "sovereign_task_monitor_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+sovereign_config = { path = "../../../shared/config" }
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.31"
+log = "0.4"
+env_logger = "0.11"
+chrono = { version = "0.4", features = ["serde"] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_System_Threading",
+    "Win32_System_Diagnostics_ToolHelp",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Services",
+    "Win32_System_RestartManager",
+    "Win32_Security",
+] }
+window-vibrancy = "0.5"

@@ -1,0 +1,13 @@
+[module]
+name = "net-panel"
+display_name = "Network Panel"
+version = "0.1.0"
+description = "Unified networking dashboard — adapters, connections, firewall, diagnostics, bandwidth monitoring"
+category = "networking"
+
+[module.capabilities]
+requires_admin = true
+platforms = ["windows", "linux"]
+
+[module.dependencies]
+shared = ["sovereign_config"]

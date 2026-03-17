@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sovereign Task Monitor</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="task-monitor">
+        <!-- Title bar -->
+        <div id="titlebar" data-tauri-drag-region>
+            <div class="titlebar-title" data-tauri-drag-region>Sovereign Task Monitor</div>
+            <div class="titlebar-buttons">
+                <button id="btn-minimize" class="titlebar-btn">&#x2212;</button>
+                <button id="btn-maximize" class="titlebar-btn">&#x25A1;</button>
+                <button id="btn-close" class="titlebar-btn titlebar-close">&#x2715;</button>
+            </div>
+        </div>
+
+        <!-- View tabs -->
+        <div id="view-tabs">
+            <button class="view-tab active" data-view="processes">Processes</button>
+            <button class="view-tab" data-view="performance">Performance</button>
+            <button class="view-tab" data-view="services">Services</button>
+            <button class="view-tab" data-view="file-locks">File Locks</button>
+        </div>
+
+        <!-- Main content -->
+        <div id="content">
+            <div id="view-processes" class="view active"></div>
+            <div id="view-performance" class="view"></div>
+            <div id="view-services" class="view"></div>
+            <div id="view-file-locks" class="view"></div>
+        </div>
+
+        <!-- Status bar -->
+        <div id="status-bar">
+            <span id="status-processes">0 processes</span>
+            <span id="status-cpu">CPU: 0%</span>
+            <span id="status-memory">Memory: 0%</span>
+            <span id="status-uptime"></span>
+        </div>
+    </div>
+
+    <script src="components/process-table.js"></script>
+    <script src="components/process-tree.js"></script>
+    <script src="components/system-graphs.js"></script>
+    <script src="components/service-list.js"></script>
+    <script src="components/file-lock-finder.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
